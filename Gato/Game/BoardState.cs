@@ -86,6 +86,7 @@ namespace Gato.Game
 
         private const int inf = 0x3f3f3f3;
         private static Hashtable cache = new Hashtable();
+        private static Random r = new Random();
         public (int score, Move bestMove) Minimax(Cell player)
         {
             if (this.XWins) return (-1, null);
@@ -95,21 +96,27 @@ namespace Gato.Game
 
             int bestScore = player == Cell.X ? inf : -inf;
             Move bestMove = null;
+            List<Move> bestMoves = new List<Move>();
 
-            
             foreach (var neight in this.Neighbors(player))
             {
                 Cell other = player == Cell.O ? Cell.X : Cell.O;
                 var result = neight.Minimax(other);
                 if ((player == Cell.X && bestScore > result.score) || (player == Cell.O && bestScore < result.score))
                 {
+                    bestMoves.Clear();
                     bestScore = result.score;
                     bestMove = neight.LastMove;
+                }
+                if ((player == Cell.X && bestScore == result.score) || (player == Cell.O && bestScore == result.score))
+                {
+                    bestMoves.Add(neight.LastMove);
                 }
 
             }
 
-            cache.Add((this, player), (bestScore, bestMove));
+            // cache.Add((this, player), (bestScore, bestMove));
+            return (bestScore, bestMoves[r.Next(0, bestMoves.Count)]);
             return (bestScore, bestMove);
         }
 
